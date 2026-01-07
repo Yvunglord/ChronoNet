@@ -1,0 +1,115 @@
+## Игнорировать файлы сборки и бинарные файлы ##
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+*.exe
+*.dll
+*.pdb
+*.cache
+*.resources
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+## Игнорировать файлы пакетов NuGet ##
+packages/
+*.nupkg
+.nuget/
+NuGet.exe
+
+## Игнорировать временные файлы VS и настройки ##
+.vs/
+*.swp
+*~
+*.db
+*.opendb
+*.VC.db
+*.sqlite3
+
+## Игнорировать файлы проектов, специфичные для пользователя ##
+*.csproj.user
+*.vbproj.user
+*.fsproj.user
+
+## Игнорировать результаты тестов ##
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+
+## Игнорировать резервные копии и временные файлы ##
+*.bak
+*.tmp
+*.log
+*.tlog
+*.lastbuildstate
+
+## Игнорировать настройки Rider и VS Code ##
+.idea/
+.vscode/
+*.rsuser
+*.sln.iml
+
+## Игнорировать специфичные для .NET файлы ##
+.project.lock.json
+.project.fragment.lock.json
+*.DotSettings
+appsettings.Development.json
+appsettings.Local.json
+
+## Игнорировать выходные директории публикации ##
+publish/
+**/[Bb]in/[Pp]ublish/
+
+## Игнорировать файлы аналитики ##
+*.codeanalysis
+*.ruleset
+
+## Игнорировать специфичные для WPF файлы ##
+*.psess
+*.vshost.*
+*.pidb
+
+## Игнорировать пользовательские настройки приложения ##
+*.userprefs
+
+## Игнорировать журналы MSBuild ##
+msbuild.log
+msbuild.err
+msbuild.wrn
+
+## Игнорировать специфичные для Entity Framework файлы ##
+Migrations/*.Designer.cs
+App_Data/
+
+## Игнорировать файлы документации ##
+Help/
+*.chm
+doc/
+docs/_site/
+
+## Игнорировать конфиденциальные данные и секреты ##
+secrets.json
+*.env
+*.secret
+connectionstrings.config
+appsettings.Private.json
+
+## Игнорировать системные файлы ##
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+
+## Игнорировать специфичные для Git файлы ##
+.gitattributes
+*.orig
+
+## Игнорировать специфичные для SQL Server файлы ##
+*.mdf
+*.ldf
+*.sdf

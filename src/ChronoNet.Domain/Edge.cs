@@ -13,6 +13,8 @@ public sealed class Edge
         private set => _direction = value;
     }
 
+    public HashSet<int> SupportedTransprtTypes { get; } = new();
+
     public Edge(Guid from, Guid to, EdgeDirection direction = EdgeDirection.Undirected)
     {
         From = from;

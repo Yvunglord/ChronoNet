@@ -76,6 +76,7 @@
                       DisplayMemberPath="Interval"
                       Width="200"
                       Style="{StaticResource ModernComboBoxStyle}"/>
+                <Button Command="{Binding ExportXmlCommand}" Content="Экспорт"/>
             </StackPanel>
         </Border>
 

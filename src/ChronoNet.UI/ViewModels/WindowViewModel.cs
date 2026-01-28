@@ -2,13 +2,19 @@
 using ChronoNet.Application.Services;
 using ChronoNet.Domain;
 using ChronoNet.Domain.Enums;
+using ChronoNet.Domain.Flows;
+using ChronoNet.Domain.Processes;
+using ChronoNet.Domain.Storage;
+using ChronoNet.Domain.Transport;
 using ChronoNet.Infrastructure.Json;
 using ChronoNet.Infrastructure.Visualization;
+using ChronoNet.Infrastructure.Xml;
 using ChronoNet.UI.Commands;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows.Forms;
 using System.Windows.Input;
+using System.Xml.Linq;
 
 namespace ChronoNet.UI.ViewModels
 {
@@ -102,6 +108,7 @@ namespace ChronoNet.UI.ViewModels
         public ICommand MakeRightDirectionCommand => new RelayCommand(MakeRightDirection);
         public ICommand MakeLeftCommand => new RelayCommand(MakeLeftDirection);
         public ICommand MakeUndirectedCommand => new RelayCommand(MakeUndirected);
+        public ICommand ExportXmlCommand => new RelayCommand(ExportXml);
 
         public WindowViewModel()
         {
@@ -182,6 +189,128 @@ namespace ChronoNet.UI.ViewModels
             DeviceViewModel?.OnSelectedDeviceChanged();
         }
 
+        private void ExportXml()
+        {
+            try
+            {
+                var staticModel = BuildStaticModel();
+                var simulationContext = BuildSimulationContext(staticModel);
+                var simulator = new FlowSimulationService();
+
+                foreach (var graph in _graphs)
+                {
+                    simulator.Simulate(graph, simulationContext);
+                }
+
+                var staticSelectors = BuildStaticSelectorsBlocks();
+
+                var builder = new XmlTaskBuilder();
+                var document = builder.Build(
+                    _graphs.ToList(),
+                    staticModel,
+                    staticSelectors);
+
+                SaveXml(document);
+            }
+            catch (Exception ex)
+            {
+                return;
+            }
+        }
+
+        private StaticModel BuildStaticModel()
+        {
+            return new StaticModel
+            {
+                Flows = new[]
+                {
+                    new FlowType(1, "RawData"),
+                    new FlowType(2, "ProcessedData")
+                },
+
+                Processes = new[]
+                {
+                    new ProcessType(1, 0.2,
+                        new Dictionary<int, double>() { { 1, 1 } },
+                        new Dictionary<int, double>() { { 2, 1 } }),
+
+                    new ProcessType(2, 0.04,
+                        new Dictionary<int, double>() { { 1, 1 } },
+                        new Dictionary<int, double>() { { 2, 1 } }),
+
+                    new ProcessType(3, 0.06666666666666667,
+                        new Dictionary<int, double>() { { 1, 1 } },
+                        new Dictionary<int, double>() { { 2, 1 } }),
+
+                    new ProcessType(4, 0.02,
+                        new Dictionary<int, double>() { { 1, 1 } },
+                        new Dictionary<int, double>() { { 2, 1 } })
+                },
+
+                Transports = new[]
+                {
+                new TransportType(1, 1,
+                    new Dictionary<int, double>() { { 2, 20 } }),
+
+                new TransportType(2, 1,
+                    new Dictionary<int, double>() { { 1, 20 } })
+                },
+
+                Srorages = new[]
+                {
+                    new StorageType(1, new[] { 1, 2 })
+                }
+            };
+        }
+
+        private SimulationContext BuildSimulationContext(StaticModel model)
+        {
+            return new SimulationContext(
+                model.Processes.ToDictionary(p => p.Id),
+                model.Transports.ToDictionary(t => t.Id));
+        }
+
+        private XElement[] BuildStaticSelectorsBlocks()
+        {
+            return new[]
+            {
+                XElement.Parse("""
+                    <selectors>
+                      <selector id="1" sign="0.4">
+                        <resultflow flow="2" interval="*" object="*" sign="1.0"/>
+                      </selector>
+                      <selector id="2" sign="0.35">
+                        <resultflow flow="1" interval="*" object="*" sign="1.0"/>
+                      </selector>
+                      <selector id="3" sign="-0.3">
+                        <lost flow="*" interval="*" object="*" sign="1.0"/>
+                      </selector>
+                    </selectors>
+                    """),
+                XElement.Parse("""
+                    <criterion sign="MAX">
+                      <selector id="1"/>
+                      <selector id="2"/>
+                      <selector id="3"/>
+                    </criterion>
+                    """),
+                XElement.Parse("<constraints/>")
+            };
+        }
+
+        private void SaveXml(XDocument document)
+        {
+            var dialog = new SaveFileDialog
+            { 
+                Filter = "XML Files (*.xml)|*.xml",
+                Title = "Сохранить XML файл"
+            };
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                document.Save(dialog.FileName);
+            }
+        }
 
         #region Работа с соединениями
 

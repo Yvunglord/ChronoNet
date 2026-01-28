@@ -12,6 +12,11 @@ public sealed class Device : VertexBase
         private set => _capabilities = value;
     }
 
+    public Dictionary<int, double> InputFlows { get; set; } = new();
+    public Dictionary<int, double> OutputFlows { get; set; } = new();
+    public Dictionary<int, double> StorageCapacities { get; set; } = new();
+    public HashSet<int> SupportedProcessTypes { get; } = new();
+
     public Device(string name, GlobalCapabilities capabilities = GlobalCapabilities.None) : base(name)
     {
         _capabilities = capabilities;

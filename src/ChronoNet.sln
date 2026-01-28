@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChronoNet.Infrastructure", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChronoNet.UI", "ChronoNet.UI\ChronoNet.UI.csproj", "{61D47564-8E99-484C-AF2F-C53F329F6A2C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChronoNet.Tests", "ChronoNet.Tests\ChronoNet.Tests.csproj", "{5E024F57-978E-4B07-9977-0579AAE17D5A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{61D47564-8E99-484C-AF2F-C53F329F6A2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61D47564-8E99-484C-AF2F-C53F329F6A2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{61D47564-8E99-484C-AF2F-C53F329F6A2C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E024F57-978E-4B07-9977-0579AAE17D5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E024F57-978E-4B07-9977-0579AAE17D5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E024F57-978E-4B07-9977-0579AAE17D5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E024F57-978E-4B07-9977-0579AAE17D5A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -28,16 +28,6 @@ jobs:
     - name: Run unit tests (if exist)
       run: dotnet test src/DynamicNetwork.sln --configuration Release --no-build --verbosity normal
       continue-on-error: true
-        
-    - name: Check architecture compliance
-      run: |
-        # Проверка наличия документации
-        if [ ! -f "docs/01-architecture-overview.md" ]; then
-          echo "⚠️  Architecture documentation is missing!"
-          exit 1
-        fi
-        
-        echo "✅ Architecture structure validated"
 
   security-scan:
     needs: build

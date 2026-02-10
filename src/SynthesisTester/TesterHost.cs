@@ -103,7 +103,7 @@ public class TesterHost
 
             var exportUseCase = _services.GetRequiredService<IExportConfigurationUseCase>();
 
-            exportUseCase.Execute("C:\\Users\\k_yak\\Desktop\\pupupu.xml");
+            exportUseCase.Execute("C:\\Users\\k_yak\\Desktop\\pupupa.xml");
 
             Console.WriteLine($"✅ Синтез завершён. Создано конфигураций: {configs.Count}\n");
 

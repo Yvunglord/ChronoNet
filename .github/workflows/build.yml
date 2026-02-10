@@ -24,7 +24,7 @@ jobs:
       run: dotnet build src/DynamicNetwork.sln --configuration Release --no-restore
       
     - name: Publish application
-      run: dotnet publish src/Presentation/DynamicNetwork.Presentation.csproj --configuration Release --output ./publish --runtime win-x64 --self-contained true
+      run: dotnet publish src/DynamicNetwork.Presentation/DynamicNetwork.Presentation.csproj --configuration Release --output ./publish --runtime win-x64 --self-contained true
       
     - name: Upload executable artifact
       uses: actions/upload-artifact@v4

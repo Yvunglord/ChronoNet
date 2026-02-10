@@ -90,40 +90,31 @@ public class SynthesisDomainService : ISynthesisDomainService
     }
 
     private List<FlowRoutePlan> PlanFlowRoutes(
-        DataFlow flow,
-        IReadOnlyList<ReachabilityPath> allPaths,
-        StructConfigurationSynthesisRequest request,
-        Dictionary<TimeInterval, StructConfiguration> intervalToBaseConfig)
+       DataFlow flow,
+       IReadOnlyList<ReachabilityPath> allPaths,
+       StructConfigurationSynthesisRequest request,
+       Dictionary<TimeInterval, StructConfiguration> intervalToBaseConfig)
     {
         var plans = new List<FlowRoutePlan>();
-        var sourceNodes = request.NodeInputs.Keys.Select(nc => nc.NodeId).ToHashSet();
-        var targetNodes = request.OutputNodes.Select(nc => nc.NodeId).ToHashSet();
 
-        var validPaths = allPaths
-            .Where(p => sourceNodes.Contains(p.Nodes.First()) && targetNodes.Contains(p.Nodes.Last()))
-            .ToList();
-
-        if (!validPaths.Any())
-            return plans;
-
-        foreach (var path in validPaths)
+        foreach (var path in allPaths)
         {
-            var currentFlowType = flow.Id;
             var transformations = new List<FlowTransformationStep>();
             var nodeFlowTypes = new Dictionary<string, string>();
+
+            var currentFlowType = flow.Transformations.Any()
+                ? flow.Transformations.First().InputType
+                : flow.Id;
+
             nodeFlowTypes[path.Nodes[0]] = currentFlowType;
 
-            for (int i = 0; i < path.Edges.Count; i++)
+            for (int i = 0; i < path.Nodes.Count; i++)
             {
-                var edge = path.Edges[i];
                 var currentNode = path.Nodes[i];
-                var nextNode = path.Nodes[i + 1];
                 var edgeInterval = path.Interval;
 
                 var requiredTransformation = flow.Transformations
                     .FirstOrDefault(t => t.InputType == currentFlowType);
-
-                string transportFlowType;
 
                 if (requiredTransformation != null)
                 {
@@ -138,45 +129,24 @@ public class SynthesisDomainService : ISynthesisDomainService
 
                     currentFlowType = requiredTransformation.OutputType;
                     nodeFlowTypes[currentNode] = currentFlowType;
-                    transportFlowType = currentFlowType;
                 }
-                else
-                {
-                    transportFlowType = currentFlowType;
-                }
+            }
+
+            for (int i = 0; i < path.Edges.Count; i++)
+            {
+                var edge = path.Edges[i];
+                var currentNode = path.Nodes[i];
+                var nextNode = path.Nodes[i + 1];
+                var edgeInterval = path.Interval;
 
                 transformations.Add(new FlowTransformationStep
                 {
                     SourceNode = currentNode,
                     TargetNode = nextNode,
-                    TransportType = transportFlowType,
+                    TransportType = currentFlowType,
                     Interval = edgeInterval,
                     FlowVolume = flow.Volume
                 });
-
-                if (!nodeFlowTypes.ContainsKey(nextNode))
-                    nodeFlowTypes[nextNode] = currentFlowType;
-            }
-
-            var finalNode = path.Nodes.Last();
-            var finalFlowType = currentFlowType;
-
-            if (flow.Transformations.Any() && finalFlowType != flow.Transformations.Last().OutputType)
-            {
-                var lastTransformation = flow.Transformations.Last();
-                if (finalFlowType == lastTransformation.InputType)
-                {
-                    transformations.Add(new FlowTransformationStep
-                    {
-                        NodeId = finalNode,
-                        InputType = finalFlowType,
-                        OutputType = lastTransformation.OutputType,
-                        Interval = path.Interval,
-                        FlowVolume = flow.Volume
-                    });
-
-                    nodeFlowTypes[finalNode] = lastTransformation.OutputType;
-                }
             }
 
             plans.Add(new FlowRoutePlan
@@ -371,14 +341,13 @@ public class SynthesisDomainService : ISynthesisDomainService
             }
         }
 
-        // Создаём НОВУЮ иммутабельную конфигурацию (без мутации!)
         return new NodeConfiguration(
             baseNode.NodeId,
             baseNode.EnabledProcesses,
             baseNode.Inputs,
             baseNode.Outputs,
             storageCapacities,
-            processes); // ← активные процессы передаются в конструктор
+            processes);
     }
 
     private LinkConfiguration SynthesizeLinkConfiguration(
@@ -405,15 +374,13 @@ public class SynthesisDomainService : ISynthesisDomainService
             }
         }
 
-        // Создаём НОВУЮ иммутабельную конфигурацию
         return new LinkConfiguration(
             baseLink.NodeA,
             baseLink.NodeB,
             baseLink.EnabledTransports,
-            transports); // ← активные транспорты передаются в конструктор
+            transports);
     }
 
-    // Вспомогательные классы остаются как доменные объекты
     private sealed class FlowTransformationStep
     {
         public string? NodeId { get; init; }
